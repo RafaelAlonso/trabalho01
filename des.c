@@ -6,6 +6,7 @@
 
   char bitAt(char *string, int position);
   void stringToBits(char *string);
+  long stringToLong(char *string);
   void initial_permutation(char **plain_text);
   void permutation(char **to_permute, int pm);
   void final_permutation(char **plain_text);
@@ -184,21 +185,23 @@ int main( int argc, char *argv[] ){
   // pass it through with the final permutation (FP)
 
   char teste[9] = "hi world\0";
+  unsigned long testeLong = stringToLong(teste);
   int auxA;
   int auxB;
 
+  printf("%lu\n", testeLong);
   stringToBits(teste);
 
   for(int i = 0; i < 64; i++){
     auxA = bitAt(teste, i);     // bit value that will be rearranged
     auxB = bitAt(teste, IP[i]); // bit value that will be replaced
 
-    if(auxA != auxB){           // if they are different
-      if (auxA == 1)
-        teste += (char) pow(2, (64 - IP[i]));
-      else
-        teste -= (char) pow(2, (64 - IP[i]));
-    }
+    // if(auxA != auxB){           // if they are different
+    //   if (auxA == 1)
+    //     teste += (char) pow(2, (64 - IP[i]));
+    //   else
+    //     teste -= (char) pow(2, (64 - IP[i]));
+    // }
   }
 
   return 0;
@@ -222,6 +225,15 @@ void stringToBits(char *string){
     printf(" ");
   }
   printf("\n");
+}
+
+long stringToLong(char *string){
+  unsigned long res = 0;
+
+  for(int i = 7; i >= 0; i--){
+    res += (unsigned long) string[i] << (8 * (7 - i));
+  }
+  return res;
 }
 
 void initial_permutation(char **plain_text){
