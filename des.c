@@ -4,13 +4,15 @@
   #include <math.h>
   #include <string.h>
 
-  void decToBin(int n);
   char bitAt(char *string, int position);
+
   void stringToBits(char *string);
   long stringToLong(char *string);
-  void initial_permutation(char **plain_text);
+  char* longToString(unsigned long textInLong);
+
+  char* initial_permutation(char *plain_text);
   void permutation(char **to_permute, int pm);
-  void final_permutation(char **plain_text);
+  char* final_permutation(char *plain_text);
   void xor(char **first, char **second);
   void sbox(char **part, short round);
   void join_and_swap(char **left, char **right);
@@ -185,41 +187,21 @@ int main( int argc, char *argv[] ){
   // join them swaped
   // pass it through with the final permutation (FP)
 
-  char teste[9] = "hi world\0";
-  unsigned long testeLong = stringToLong(teste);
+  char entrada[8] = "hi world";
+  char* res;
   int auxA;
   int auxB;
+  int pos;
 
-  printf("%lu\n", testeLong);
-  stringToBits(teste);
+  stringToBits(entrada);
 
-  for(int i = 0; i < 64; i++){
-    auxA = bitAt(teste, i);     // bit value that will be rearranged
-    auxB = bitAt(teste, IP[i]); // bit value that will be replaced
+  res = initial_permutation(entrada);
+  stringToBits(res);
+  res = final_permutation(res);
+  stringToBits(res);
 
-    // if(auxA != auxB){           // if they are different
-    //   if (auxA == 1)
-    //     teste += (char) pow(2, (64 - IP[i]));
-    //   else
-    //     teste -= (char) pow(2, (64 - IP[i]));
-    // }
-  }
-
+  free(res);
   return 0;
-}
-
-void decToBin(int n) {
-    // counter for binary array
-    int i = 0;
-    while (n > 0) {
-
-        // storing remainder in binary array
-        printf('%c',n%2)
-        n = n / 2;
-        i++;
-    }
-
-	return;
 }
 
 char bitAt(char *string, int position){
@@ -251,15 +233,38 @@ long stringToLong(char *string){
   return res;
 }
 
-void initial_permutation(char **plain_text){
-  // given the plain_text, get it's bits
-  // rearrange them according to the position pointed out in IP
-
+char* longToString(unsigned long textInLong){
+  char* res = (char *) malloc(8 * sizeof(char));
+  for(int i = 7; i >= 0; i--){
+    res[7-i] = (char) ((textInLong << (8 * (7 - i))) >> 56);
+  }
+  return res;
 }
 
-void final_permutation(char **plain_text){
+char* initial_permutation(char *plain_text){
   // given the plain_text, get it's bits
   // rearrange them according to the position pointed out in IP
+  unsigned long res = 0;
+  for(int i = 0; i < 64; i++){
+    if (bitAt(plain_text, i)){
+      res += pow(2, 64 - IP[i]);
+    }
+  }
+
+  return longToString(res);
+}
+
+char* final_permutation(char *plain_text){
+  // given the plain_text, get it's bits
+  // rearrange them according to the position pointed out in IP
+  unsigned long res = 0;
+  for(int i = 0; i < 64; i++){
+    if (bitAt(plain_text, i)){
+      res += pow(2, 64 - FP[i]);
+    }
+  }
+
+  return longToString(res);
 }
 
 void permutation(char **to_permute, int pm){
