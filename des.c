@@ -247,7 +247,7 @@ char* initial_permutation(char *plain_text){
   unsigned long res = 0;
   for(int i = 0; i < 64; i++){
     if (bitAt(plain_text, i)){
-      res += pow(2, 64 - IP[i]);
+      res += (unsigned long) pow(2, 64 - IP[i]);
     }
   }
 
@@ -260,7 +260,7 @@ char* final_permutation(char *plain_text){
   unsigned long res = 0;
   for(int i = 0; i < 64; i++){
     if (bitAt(plain_text, i)){
-      res += pow(2, 64 - FP[i]);
+      res += (unsigned long) pow(2, 64 - FP[i]);
     }
   }
 
