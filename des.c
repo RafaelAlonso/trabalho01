@@ -2,7 +2,10 @@
   #include <stdio.h>
   #include <stdlib.h>
   #include <math.h>
+  #include <string.h>
 
+  char bitAt(char *string, int position);
+  void stringToBits(char *string);
   void initial_permutation(char **plain_text);
   void permutation(char **to_permute, int pm);
   void final_permutation(char **plain_text);
@@ -181,16 +184,44 @@ int main( int argc, char *argv[] ){
   // pass it through with the final permutation (FP)
 
   char teste[9] = "hi world\0";
-  char c;
+  int auxA;
+  int auxB;
 
-  int value = 0;
-  for (int i = 7; i >= 0; i--)
-    value += (int) pow(2, i) * teste[7 - i];
-  printf("%d", value);
+  stringToBits(teste);
 
-  printf("\n%s\n", teste);
+  for(int i = 0; i < 64; i++){
+    auxA = bitAt(teste, i);     // bit value that will be rearranged
+    auxB = bitAt(teste, IP[i]); // bit value that will be replaced
+
+    if(auxA != auxB){           // if they are different
+      if (auxA == 1)
+        teste += (char) pow(2, (64 - IP[i]));
+      else
+        teste -= (char) pow(2, (64 - IP[i]));
+    }
+  }
 
   return 0;
+}
+
+char bitAt(char *string, int position){
+  int a = position / 8;
+  int b = 7 - (position % 8);
+
+  // printf("%d, %d\n", b, 1 << b);
+  return (string[a] & (1 << b)) ? 1 : 0;
+}
+
+void stringToBits(char *string){
+  char c;
+  for(short i = 0; i < 8; i++){
+    c = string[i];
+    for (short j = 7; 0 <= j; j--){
+      printf("%c", (c & (1 << j)) ? '1' : '0');
+    }
+    printf(" ");
+  }
+  printf("\n");
 }
 
 void initial_permutation(char **plain_text){
