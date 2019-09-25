@@ -1,4 +1,4 @@
-// cabeçalho
+// <editor-fold
   #include <stdio.h>
   #include <stdlib.h>
   #include <math.h>
@@ -141,7 +141,7 @@
   };
 
   const int SHIFTS[] = { 1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1 };
-// fim cabeçalho
+// </editor-fold>
 
 int main( int argc, char *argv[] ){
   // get the 64-bit plain text
