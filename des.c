@@ -4,6 +4,7 @@
   #include <math.h>
   #include <string.h>
 
+  void decToBin(int n);
   char bitAt(char *string, int position);
   void stringToBits(char *string);
   void initial_permutation(char **plain_text);
@@ -202,6 +203,20 @@ int main( int argc, char *argv[] ){
   }
 
   return 0;
+}
+
+void decToBin(int n) {
+    // counter for binary array
+    int i = 0;
+    while (n > 0) {
+
+        // storing remainder in binary array
+        printf('%c',n%2)
+        n = n / 2;
+        i++;
+    }
+
+	return;
 }
 
 char bitAt(char *string, int position){
