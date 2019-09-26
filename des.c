@@ -7,6 +7,7 @@
   char bitAt(char *string, int position);
 
   void stringToBits(char *string);
+  unsigned long stringToLong(char *string);
   char* longToString(unsigned long textInLong);
   char* longToHex(unsigned long textInLong);
 
@@ -174,6 +175,8 @@ int main( int argc, char *argv[] ){
 
   printf("Entrada não manipulada em texto:  ");
   printf("%s\n", entrada);
+  printf("Entrada não manipulada em Hex:    ");
+  printf("%lX\n", stringToLong(entrada));
   printf("Entrada não manipulada (64-bits): ");
   stringToBits(entrada);
   printf("Entrada após IP (64-bits):        ");
@@ -327,6 +330,7 @@ int main( int argc, char *argv[] ){
 }
 
 char bitAt(char *string, int position){
+  position = 63 - position;
   int a = position / 8;
   int b = 7 - (position % 8);
 
@@ -346,6 +350,14 @@ void stringToBits(char *string){
   printf("\n");
 }
 
+unsigned long stringToLong(char *string){
+  unsigned long res = 0;
+  for(int i = 0; i < 64; i++){
+    res += bitAt(string, i) * (unsigned long) pow(2, i);
+  }
+  return res;
+}
+
 char* longToString(unsigned long textInLong){
   char* res = (char *) malloc(8 * sizeof(char));
   for(int i = 7; i >= 0; i--){
@@ -354,29 +366,22 @@ char* longToString(unsigned long textInLong){
   return res;
 }
 
-char* longToHex(unsigned long textInLong){
-  // char aux;
-  // char hexCode[4][4] = {
-  //   '0', '1', '2', '3',
-  //   '4', '5', '6', '7',
-  //   '8', '9', 'A', 'B',
-  //   'C', 'D', 'E', 'F'
-  // }
-  // for(int i = 7; i >= 0; i--){
-  //   aux = (char) ( (unsigned long) (textInLong << (8 * (7 - i))) >> 56);
-  //   printf("%c\n", );
-  // }
-  return NULL;
-}
-
 unsigned long initial_permutation(char *plain_text){
   // given the plain_text, get it's bits
   // rearrange them according to the position pointed out in IP
   unsigned long res = 0;
-  for(int i = 0; i < 64; i++){
-    if (bitAt(plain_text, 63 - i)){
-      res += (unsigned long) pow(2, 64 - IP[i]);
-    }
+  for(int i = 63; i >= 0; i--){
+    stringToBits(plain_text);
+    printf("Bit na posição %d: %d\n", 63 - i, bitAt(plain_text, 63 - i));
+    printf("Tem que ir para:  %d\n", IP[i] - 1);
+    printf("Tentativa: ");
+    stringToBits(longToString((unsigned long) bitAt(plain_text, i) << (IP[i] - 1)));
+
+    if (bitAt(plain_text, 63 - i))
+      res += (unsigned long) 1 << (IP[i] - 1);
+    printf("Resultado: ");
+    stringToBits(longToString(res));
+    printf("\n");
   }
 
   return res;
