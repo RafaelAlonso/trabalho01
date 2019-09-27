@@ -140,14 +140,12 @@
 
   // Permutation Choice 2 Matrix
   const int PC2[]  = {
-      14, 17, 11, 24,  1,  5,
-       3, 28, 15,  6, 21, 10,
-      23, 19, 12,  4, 26,  8,
-      16,  7, 27, 20, 13,  2,
-      41, 52, 31, 37, 47, 55,
-      30, 40, 51, 45, 33, 48,
-      44, 49, 39, 56, 34, 53,
-      46, 42, 50, 36, 29, 32
+      14, 17, 11, 24,  1,  5,  3, 28,
+      15,  6, 21, 10, 23, 19, 12,  4,
+      26,  8, 16,  7, 27, 20, 13,  2,
+      41, 52, 31, 37, 47, 55, 30, 40,
+      51, 45, 33, 48, 44, 49, 39, 56,
+      34, 53, 46, 42, 50, 36, 29, 32
   };
 
   const int SHIFTS[] = { 1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1 };
@@ -173,29 +171,34 @@ int main( int argc, char *argv[] ){
   // pass it through the initial permutation (IP)   => 64-bit
   entradaManipulada = initial_permutation(entrada);
 
-  printf("Entrada não manipulada em texto:  ");
+  printf("Entrada não manipulada (texto):   ");
   printf("%s\n", entrada);
-  printf("Entrada não manipulada em Hex:    ");
+  printf("Entrada não manipulada (Hex):     ");
   printf("%lX\n", stringToLong(entrada));
   printf("Entrada não manipulada (64-bits): ");
   stringToBits(entrada);
   printf("Entrada após IP (64-bits):        ");
   stringToBits(longToString(entradaManipulada));
-  printf("Entrada após IP em Hex (64-bits): ");
+  printf("Entrada após IP (Hex):            ");
   printf("%lX\n", entradaManipulada);
+  printf("\n");
 
-  return 0;
   // get the 64-bit key
   strcpy(chave, argv[2]);
   chave[8] = '\0';
   // pass it through the permutation choice 1 (PC1) => 56-bit
   chaveManipulada = permutation(chave, PC1, 56, 64);
 
-  printf("Bits da chave não alterada (64-bits): ");
+  printf("Chave não manipulada (texto):     ");
+  printf("%s\n", chave);
+  printf("Chave não manipulada (64-bits):   ");
   stringToBits(chave);
-
-  printf("Bits da chave manipulada (56-bits): ");
+  printf("Chave não manipulada (Hex):       ");
+  printf("%lX\n", stringToLong(chave));
+  printf("Chave manipulada (56-bits):       ");
   stringToBits(longToString(chaveManipulada));
+  printf("Chave manipulada (Hex):           ");
+  printf("%lX\n", chaveManipulada);
   printf("\n");
 
   // =============================== ROUNDS ===============================
@@ -204,34 +207,37 @@ int main( int argc, char *argv[] ){
     // ============================= KEY PART =============================
     // divide the 56-key in two => 28-bit / 28-bit
     chaveEsq = chaveManipulada >> 28;
-    chaveDir = chaveManipulada << 36 >> 36;
+    // printf("Lado esquerdo da chave (28-bits): ");
+    // stringToBits(longToString(chaveEsq));
 
-    printf("Lado esquerdo da chave (28-bits): ");
-    stringToBits(longToString(chaveEsq));
-    printf("Lado direito da chave (28-bits):  ");
-    stringToBits(longToString(chaveDir));
-    printf("\n");
+    chaveEsq = circularLeftShift(chaveEsq, SHIFTS[i]);
+    // printf("Lado esquerdo shiftado (28-bits): ");
+    // stringToBits(longToString(chaveEsq));
 
     // shift the two parts to the left and join them  => 56-bit
-    chaveEsq = circularLeftShift(chaveEsq, SHIFTS[i]);
-    chaveDir = circularLeftShift(chaveDir, SHIFTS[i]);
+    chaveDir = chaveManipulada << 36 >> 36;
+    // printf("Lado direito da chave (28-bits):  ");
+    // stringToBits(longToString(chaveDir));
 
-    printf("Lado esquerdo da chave após shift (28-bits): ");
-    stringToBits(longToString(chaveEsq));
-    printf("Lado direito da chave após shift (28-bits):  ");
-    stringToBits(longToString(chaveDir));
-    printf("\n");
+    chaveDir = circularLeftShift(chaveDir, SHIFTS[i]);
+    // printf("Lado direito shiftado (28-bits):  ");
+    // stringToBits(longToString(chaveDir));
 
     chaveManipulada = (chaveEsq << 28) | chaveDir;
-    printf("Junção dos lados (56-bits): ");
+    printf("Chave sem PC2 (56-bits):          ");
     stringToBits(longToString(chaveManipulada));
-    printf("\n");
+    // printf("Chave sem PC2 (Hex):              ");
+    // printf("%lX\n", chaveManipulada);
+    // printf("\n");
 
     // permutate the shifted key with permutation choice 2 (PC2) => 48-bit
     chaveManipulada = permutation(longToString(chaveManipulada), PC2, 48, 56);
-    printf("Chave após permutação PC2 (48-bits): ");
+    printf("Chave do Round %02d (48-bits):      ", i);
     stringToBits(longToString(chaveManipulada));
+    printf("Chave do Round %02d (Hex):          ", i);
+    printf("%lX\n", chaveManipulada);
     printf("\n");
+    return 0;
 
     // ====================================================================
 
@@ -371,17 +377,7 @@ unsigned long initial_permutation(char *plain_text){
   // rearrange them according to the position pointed out in IP
   unsigned long res = 0;
   for(int i = 63; i >= 0; i--){
-    stringToBits(plain_text);
-    printf("Bit na posição %d: %d\n", 63 - i, bitAt(plain_text, 63 - i));
-    printf("Tem que ir para:  %d\n", IP[i] - 1);
-    printf("Tentativa: ");
-    stringToBits(longToString((unsigned long) bitAt(plain_text, i) << (IP[i] - 1)));
-
-    if (bitAt(plain_text, 63 - i))
-      res += (unsigned long) 1 << (IP[i] - 1);
-    printf("Resultado: ");
-    stringToBits(longToString(res));
-    printf("\n");
+    res += (unsigned long) bitAt(plain_text, IP[i] - 1) << i;
   }
 
   return res;
@@ -391,10 +387,8 @@ unsigned long final_permutation(char *plain_text){
   // given the plain_text, get it's bits
   // rearrange them according to the position pointed out in IP
   unsigned long res = 0;
-  for(int i = 0; i < 64; i++){
-    if (bitAt(plain_text, 63 - i)){
-      res += (unsigned long) pow(2, 64 - FP[i]);
-    }
+  for(int i = 63; i >= 0; i--){
+    res += (unsigned long) bitAt(plain_text, FP[i] - 1) << i;
   }
 
   return res;
@@ -404,10 +398,8 @@ unsigned long permutation(char *to_permute, const int pm[], int pmSize, int perm
   // change the place of each bit of given part, placing it in the
   // position specified by the given permutation matrix
   unsigned long res = 0;
-  for(int i = 0; i < pmSize; i++){
-    if (bitAt( to_permute, 63 - (pm[i] + (8 * (64 - permuteSize))) )){
-      res += (unsigned long) pow(2, pmSize - 1 - i);
-    }
+  for(int i = pmSize - 1; i >= 0; i--){
+    res += (unsigned long) bitAt(to_permute, pm[i] - 1) << i;
   }
 
   return res;
@@ -416,14 +408,14 @@ unsigned long permutation(char *to_permute, const int pm[], int pmSize, int perm
 unsigned long circularLeftShift(unsigned long part, int nShifts){
   part = part << nShifts;
 
-  if (bitAt(longToString(part), 36)) part -= (unsigned long) pow(2, 28);
-
   if (nShifts == 1){
-    return part + bitAt(longToString(part), 36);
+    part += bitAt(longToString(part), 28);
   } else{
-    if (bitAt(longToString(part), 35)) part -= (unsigned long) pow(2, 29);
-    return part + bitAt(longToString(part), 36) + (2 * bitAt(longToString(part), 35));
+    part += bitAt(longToString(part), 28) + (2 * bitAt(longToString(part), 29));
   }
+  part -= (unsigned long) (bitAt(longToString(part), 28)) << 28;
+  part -= (unsigned long) (bitAt(longToString(part), 29)) << 29;
+  return part;
 }
 
 char sbox(char part, short part_round){
