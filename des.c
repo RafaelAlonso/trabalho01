@@ -183,7 +183,8 @@ int main( int argc, char *argv[] ){
   entrada[8] = '\0';
 
   // pass it through the initial permutation (IP)   => 64-bit
-  entradaManipulada = initial_permutation(entrada);
+  entradaManipulada = permutation(entrada, IP, 64);
+  // entradaManipulada = initial_permutation(entrada);
 
   printf("Entrada não manipulada em texto:  ");
   printf("%s\n", entrada);
@@ -220,10 +221,8 @@ int main( int argc, char *argv[] ){
     chaveDir = chaveManipulada << 36 >> 36;
 
     printf("Lado esquerdo da chave (28-bits): ");
-    // stringToBits(longToString(chaveEsq));
 	printf("%lX\n", chaveEsq);
     printf("Lado direito da chave (28-bits):  ");
-    // stringToBits(longToString(chaveDir));
     printf("%07lX\n\n", chaveDir);
 
     // shift the two parts to the left and join them  => 56-bit
@@ -232,25 +231,20 @@ int main( int argc, char *argv[] ){
 
     printf("Lado esquerdo da chave após circular-shift (28-bits): ");
 	printf("%07lX\n", chaveEsq);
-	// stringToBits(longToString(chaveEsq));
     printf("Lado direito da chave após circular-shift (28-bits):  ");
 	printf("%07lX\n\n", chaveDir);
-	// stringToBits(longToString(chaveDir));
-    // printf("\n");
 
     chaveManipulada = (chaveEsq << 28) | chaveDir;
     printf("Junção dos lados (56-bits): ");
 	printf("%lX\n\n", chaveManipulada);
-    // stringToBits(longToString(chaveManipulada));
-    // printf("\n");
 
     // permutate the shifted key with permutation choice 2 (PC2) => 48-bit
     chaveManipulada = permutation(longToString(chaveManipulada), PC2, 48);
     printf("Chave após permutação PC2 (48-bits): ");
 	printf("%lX\n\n", chaveManipulada);
-	// stringToBits(longToString(chaveManipulada));
-    // printf("\n");
+
 	return 0;
+
     // ====================================================================
 
     // ============================= TXT PART =============================
@@ -338,7 +332,8 @@ int main( int argc, char *argv[] ){
   printf("\n");
 
   // pass it through with the final permutation (FP)
-  entradaManipulada = final_permutation(longToString(entradaManipulada));
+  // entradaManipulada = final_permutation(longToString(entradaManipulada));
+  entradaManipulada = permutation(longToString(entradaManipulada), FP, 64);
 
   FILE *f = fopen("out.txt", "w");
   fprintf(f, "%s\n", longToString(entradaManipulada));
