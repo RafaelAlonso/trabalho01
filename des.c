@@ -422,15 +422,16 @@ unsigned long permutation(char *to_permute, const int pm[], int pmSize){
 unsigned long circularLeftShift(unsigned long part, int nShifts){
   part = part << nShifts;
 
-  if (bitAt(longToString(part), 28)) part -= (unsigned long) pow(2, 28);
-
   if (nShifts == 1){
-    return part + bitAt(longToString(part), 36);
+    part += bitAt(longToString(part), 28);
   } else{
-    if (bitAt(longToString(part), 35)) part -= (unsigned long) pow(2, 29);
-    return part + bitAt(longToString(part), 36) + (2 * bitAt(longToString(part), 35));
+    part += bitAt(longToString(part), 28) + (2 * bitAt(longToString(part), 29));
   }
+  part -= (unsigned long) (bitAt(longToString(part), 28)) << 28;
+  part -= (unsigned long) (bitAt(longToString(part), 29)) << 29;
+  return part;
 }
+
 
 char sbox(char part, short part_round){
   // given the 6-bit part and which one it is (1 - 8),
