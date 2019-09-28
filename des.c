@@ -209,9 +209,9 @@ int main( int argc, char *argv[] ){
   // stringToBits(chave);
 
   printf("Bits da chave manipulada (56-bits):     ");
-  printf("%08lX\n\n", chaveManipulada);
-  // stringToBits(longToString(chaveManipulada));
-
+  printf("%08lX\n", chaveManipulada);
+  stringToBits(longToString(chaveManipulada));
+  printf("\n\n");
   // =============================== ROUNDS ===============================
   // for each of the 16 rounds:
   for(char i = 0; i < 15; i++){
@@ -221,21 +221,25 @@ int main( int argc, char *argv[] ){
     chaveDir = chaveManipulada << 36 >> 36;
 
     printf("Lado esquerdo da chave (28-bits): ");
-	printf("%lX\n", chaveEsq);
+	stringToBits(longToString(chaveEsq));
+	// printf("%lX\n", chaveEsq);
     printf("Lado direito da chave (28-bits):  ");
-    printf("%07lX\n\n", chaveDir);
+	stringToBits(longToString(chaveDir));
+    // printf("%07lX\n\n", chaveDir);
 
     // shift the two parts to the left and join them  => 56-bit
     chaveEsq = circularLeftShift(chaveEsq, SHIFTS[i]);
     chaveDir = circularLeftShift(chaveDir, SHIFTS[i]);
 
     printf("Lado esquerdo da chave após circular-shift (28-bits): ");
-	printf("%07lX\n", chaveEsq);
+	stringToBits(longToString(chaveEsq));
+	// printf("%07lX\n", chaveEsq);
     printf("Lado direito da chave após circular-shift (28-bits):  ");
-	printf("%07lX\n\n", chaveDir);
+	stringToBits(longToString(chaveDir));
+	// printf("%07lX\n\n", chaveDir);
 
     chaveManipulada = (chaveEsq << 28) | chaveDir;
-    printf("Junção dos lados (56-bits): ");
+    printf("\n\nJunção dos lados (56-bits): ");
 	printf("%lX\n\n", chaveManipulada);
 
     // permutate the shifted key with permutation choice 2 (PC2) => 48-bit
@@ -418,7 +422,7 @@ unsigned long permutation(char *to_permute, const int pm[], int pmSize){
 unsigned long circularLeftShift(unsigned long part, int nShifts){
   part = part << nShifts;
 
-  if (bitAt(longToString(part), 36)) part -= (unsigned long) pow(2, 28);
+  if (bitAt(longToString(part), 28)) part -= (unsigned long) pow(2, 28);
 
   if (nShifts == 1){
     return part + bitAt(longToString(part), 36);
