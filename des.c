@@ -12,7 +12,7 @@
   char* longToHex(unsigned long textInLong);
 
   unsigned long initial_permutation(char *plain_text);
-  unsigned long permutation(char *to_permute, const int pm[], int pmSize, int permuteSize);
+  unsigned long permutation(char *to_permute, const int pm[], int pmSize);
   unsigned long final_permutation(char *plain_text);
 
   unsigned long circularLeftShift(unsigned long part, int nShifts);
@@ -155,28 +155,27 @@ int main( int argc, char *argv[] ){
   unsigned long entradaManipulada;
   unsigned long entradaEsq;
   unsigned long entradaDir;
-  char eightSplit[8] = "";
 
   unsigned long chaveManipulada;
   unsigned long chaveEsq;
   unsigned long chaveDir;
 
   char entrada[9];
-  char chave[9];
+  char *chave = longToString(1383827165325090801);
+  char eightSplit[8] = "";
 
   // get the 64-bit plain text
   strcpy(entrada, argv[1]);
   entrada[8] = '\0';
-
-  // pass it through the initial permutation (IP)   => 64-bit
-  entradaManipulada = initial_permutation(entrada);
-
   printf("Entrada não manipulada (texto):   ");
   printf("%s\n", entrada);
   printf("Entrada não manipulada (Hex):     ");
   printf("%lX\n", stringToLong(entrada));
   printf("Entrada não manipulada (64-bits): ");
   stringToBits(entrada);
+
+  // pass it through the initial permutation (IP)   => 64-bit
+  entradaManipulada = initial_permutation(entrada);
   printf("Entrada após IP (64-bits):        ");
   stringToBits(longToString(entradaManipulada));
   printf("Entrada após IP (Hex):            ");
@@ -184,22 +183,24 @@ int main( int argc, char *argv[] ){
   printf("\n");
 
   // get the 64-bit key
-  strcpy(chave, argv[2]);
-  chave[8] = '\0';
-  // pass it through the permutation choice 1 (PC1) => 56-bit
-  chaveManipulada = permutation(chave, PC1, 56, 64);
-
+  // strcpy(chave, argv[2]);
+  // chave[8] = '\0';
   printf("Chave não manipulada (texto):     ");
   printf("%s\n", chave);
   printf("Chave não manipulada (64-bits):   ");
   stringToBits(chave);
   printf("Chave não manipulada (Hex):       ");
   printf("%lX\n", stringToLong(chave));
+
+  // pass it through the permutation choice 1 (PC1) => 56-bit
+  chaveManipulada = permutation(chave, PC1, 56);
   printf("Chave manipulada (56-bits):       ");
   stringToBits(longToString(chaveManipulada));
   printf("Chave manipulada (Hex):           ");
   printf("%lX\n", chaveManipulada);
   printf("\n");
+
+  return 0;
 
   // =============================== ROUNDS ===============================
   // for each of the 16 rounds:
@@ -231,7 +232,7 @@ int main( int argc, char *argv[] ){
     // printf("\n");
 
     // permutate the shifted key with permutation choice 2 (PC2) => 48-bit
-    chaveManipulada = permutation(longToString(chaveManipulada), PC2, 48, 56);
+    chaveManipulada = permutation(longToString(chaveManipulada), PC2, 48);
     printf("Chave do Round %02d (48-bits):      ", i);
     stringToBits(longToString(chaveManipulada));
     printf("Chave do Round %02d (Hex):          ", i);
@@ -254,7 +255,7 @@ int main( int argc, char *argv[] ){
 
     // ============= RIGHT PART =============
     // pass it through the expansion (E) => 48-bit
-    entradaDir = permutation(longToString(entradaDir), E, 48, 32);
+    entradaDir = permutation(longToString(entradaDir), E, 48);
     printf("Lado direito do texto após expansão (48-bits):  ");
     stringToBits(longToString(entradaDir));
     printf("\n");
@@ -287,7 +288,7 @@ int main( int argc, char *argv[] ){
     printf("\n");
 
     // pass it through the permutation (P) => 32-bit
-    entradaDir = permutation(longToString(entradaDir), P, 32, 32);
+    entradaDir = permutation(longToString(entradaDir), P, 32);
     printf("Lado direito do texto após permutação (32-bits):  ");
     stringToBits(longToString(entradaDir));
     printf("\n");
@@ -376,7 +377,8 @@ unsigned long initial_permutation(char *plain_text){
   // given the plain_text, get it's bits
   // rearrange them according to the position pointed out in IP
   unsigned long res = 0;
-  for(int i = 63; i >= 0; i--){
+  for(int i = 0; i < 64; i++){
+    // printf("O bit %02d está recebendo o valor %d, vindo do bit %02d\n", i, bitAt(plain_text, IP[i] - 1), IP[i]);
     res += (unsigned long) bitAt(plain_text, IP[i] - 1) << i;
   }
 
@@ -394,12 +396,15 @@ unsigned long final_permutation(char *plain_text){
   return res;
 }
 
-unsigned long permutation(char *to_permute, const int pm[], int pmSize, int permuteSize){
+unsigned long permutation(char *to_permute, const int pm[], int pmSize){
   // change the place of each bit of given part, placing it in the
   // position specified by the given permutation matrix
   unsigned long res = 0;
-  for(int i = pmSize - 1; i >= 0; i--){
-    res += (unsigned long) bitAt(to_permute, pm[i] - 1) << i;
+  for(int i = 0; i < pmSize; i++){
+    printf("O bit %02d da chave original (%d) vira o bit %02d da chave permutada\n", 65-pm[i], bitAt(to_permute, (64 - pm[i])), i+1);
+    res += (unsigned long) bitAt(to_permute, (64 - pm[i])) << i;
+    printf("Chave atual: ");
+    stringToBits(longToString(res));
   }
 
   return res;
