@@ -161,13 +161,13 @@ int main( int argc, char *argv[] ){
   unsigned long chaveEsq;
   unsigned long chaveDir;
 
-  char entrada[9];
-  char chave[9];
+  char *entrada = longToString(81985529216486895);
+  char *chave = longToString(1383827165325090801);
   char eightSplit[8] = "";
 
   // get the 64-bit plain text
-  strcpy(entrada, argv[1]);
-  entrada[8] = '\0';
+  // strcpy(entrada, argv[1]);
+  // entrada[8] = '\0';
   printf("Entrada não manipulada (texto):   ");
   printf("%s\n", entrada);
   printf("Entrada não manipulada (Hex):     ");
@@ -184,8 +184,8 @@ int main( int argc, char *argv[] ){
   printf("\n");
 
   // get the 64-bit key
-  strcpy(chave, argv[2]);
-  chave[8] = '\0';
+  // strcpy(chave, argv[2]);
+  // chave[8] = '\0';
   printf("Chave não manipulada (texto):     ");
   printf("%s\n", chave);
   printf("Chave não manipulada (64-bits):   ");
@@ -417,8 +417,8 @@ unsigned long permutation(char *to_permute, const int pm[], int pmSize){
 unsigned long expansion(char *to_permute){
   unsigned long res = 0;
   for(int i = 0; i < 48; i++){
-    // printf("O bit %02d da chave original (%d) vira o bit %02d da chave permutada\n", E[i] - 1, bitAt(to_permute, E[i] - 1), (48 - i));
-    res += (unsigned long) bitAt(to_permute, E[i] - 1) << (48 - i);
+    // printf("O bit %02d da chave original (%d) vira o bit %02d da chave permutada\n", E[i], bitAt(to_permute, E[i] - 1), i);
+    res += (unsigned long) bitAt(to_permute, E[i] - 1) << i;
   }
 
   return res;
