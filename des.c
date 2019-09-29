@@ -177,9 +177,9 @@ int main( int argc, char *argv[] ){
 
   // pass it through the initial permutation (IP)   => 64-bit
   entradaManipulada = initial_permutation(entrada);
-  printf("Entrada após IP (64-bits):        ");
+  printf("Entrada após IP        (64-bits): ");
   stringToBits(longToString(entradaManipulada));
-  printf("Entrada após IP (Hex):            ");
+  printf("Entrada após IP        (Hex):     ");
   printf("%02lX\n", entradaManipulada);
   printf("\n");
 
@@ -195,9 +195,9 @@ int main( int argc, char *argv[] ){
 
   // pass it through the permutation choice 1 (PC1) => 56-bit
   chaveManipulada = permutation(chave, PC1, 56, 64);
-  printf("Chave manipulada (56-bits):       ");
+  printf("Chave após PC1       (56-bits):   ");
   stringToBits(longToString(chaveManipulada));
-  printf("Chave manipulada (Hex):           ");
+  printf("Chave após PC1       (Hex):       ");
   printf("%02lX\n", chaveManipulada);
   printf("\n");
 
@@ -298,9 +298,9 @@ int main( int argc, char *argv[] ){
       // join the left and right sides swaped => 64-bit
       entradaManipulada = (entradaDir << 32) | entradaEsq;
       printf("Round %02d (64-bits):               ", i+1);
-      stringToBits(longToString((entradaEsq << 32) | entradaDir));
+      stringToBits(longToString(entradaManipulada));
       printf("Round %02d (Hex):                   ", i+1);
-      printf("%02lX\n", ((entradaEsq << 32) | entradaDir));
+      printf("%02lX\n", entradaManipulada);
       printf("\n");
 
     // ====================================================================
