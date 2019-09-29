@@ -438,34 +438,48 @@ unsigned long circularLeftShift(unsigned long part, int nShifts){
 }
 
 char sbox(char part, short part_round){
+  printf("Parte recebida: %d\n", part);
   // given the 6-bit part and which one it is (1 - 8),
   // get the first and last bit of it => 2-bit
-  char external = part & (1 << 6) * 2 + part & 1;
+  char external = ((part & (1 << 5)) >> 4) + (part & 1);
   // get all the others separately    => 4-bit
-  char internal = part & (15 << 1);
+  char internal = (part << 3 >> 4) & 15;
   // the 2-bit part indicate the SBox row
   // the 4-bit part indicate the SBox column
   // return the value indicated in the found position
 
-  char res;
+  //
+
+  printf("Buscando no SBOX %d, linha %d, coluna %d\n", part_round, external, internal);
+
+  char res = 0;
   switch(part_round){
     case 1:
       res = S1[external][internal];
+      break;
     case 2:
       res = S2[external][internal];
+      break;
     case 3:
       res = S3[external][internal];
+      break;
     case 4:
       res = S4[external][internal];
+      break;
     case 5:
       res = S5[external][internal];
+      break;
     case 6:
       res = S6[external][internal];
+      break;
     case 7:
       res = S7[external][internal];
+      break;
     case 8:
       res = S8[external][internal];
+      break;
   }
+  printf("Resultado obtido: %d\n\n", res);
   return res;
 }
 
