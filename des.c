@@ -200,28 +200,29 @@ int main( int argc, char *argv[] ){
   printf("%lX\n", chaveManipulada);
   printf("\n");
 
+  // divide the 56-key in two => 28-bit / 28-bit
+  chaveEsq = chaveManipulada >> 28;
+  // printf("Lado esquerdo da chave (28-bits): ");
+  // stringToBits(longToString(chaveEsq));
+
+  chaveEsq = circularLeftShift(chaveEsq, SHIFTS[0]);
+  printf("Lado esquerdo shiftado (28-bits): ");
+  stringToBits(longToString(chaveEsq));
+
+  // shift the two parts to the left and join them  => 56-bit
+  chaveDir = chaveManipulada << 36 >> 36;
+  // printf("Lado direito da chave (28-bits):  ");
+  // stringToBits(longToString(chaveDir));
+
+  chaveDir = circularLeftShift(chaveDir, SHIFTS[0]);
+  printf("Lado direito shiftado (28-bits):  ");
+  stringToBits(longToString(chaveDir));
+
+
   // =============================== ROUNDS ===============================
   // for each of the 16 rounds:
   for(char i = 0; i < 15; i++){
     // ============================= KEY PART =============================
-    // divide the 56-key in two => 28-bit / 28-bit
-    chaveEsq = chaveManipulada >> 28;
-    // printf("Lado esquerdo da chave (28-bits): ");
-    // stringToBits(longToString(chaveEsq));
-
-    chaveEsq = circularLeftShift(chaveEsq, SHIFTS[i]);
-    printf("Lado esquerdo shiftado (28-bits): ");
-    stringToBits(longToString(chaveEsq));
-
-    // shift the two parts to the left and join them  => 56-bit
-    chaveDir = chaveManipulada << 36 >> 36;
-    // printf("Lado direito da chave (28-bits):  ");
-    // stringToBits(longToString(chaveDir));
-
-    chaveDir = circularLeftShift(chaveDir, SHIFTS[i]);
-    printf("Lado direito shiftado (28-bits):  ");
-    stringToBits(longToString(chaveDir));
-
     chaveManipulada = (chaveEsq << 28) + chaveDir;
     printf("Chave sem PC2 (56-bits):          ");
     stringToBits(longToString(chaveManipulada));
@@ -305,6 +306,14 @@ int main( int argc, char *argv[] ){
       stringToBits(longToString(entradaManipulada));
       printf("\n");
     // ====================================================================
+
+    chaveEsq = circularLeftShift(chaveEsq, SHIFTS[i+1]);
+    printf("Lado esquerdo shiftado (28-bits): ");
+    stringToBits(longToString(chaveEsq));
+
+    chaveDir = circularLeftShift(chaveDir, SHIFTS[i+1]);
+    printf("Lado direito shiftado (28-bits):  ");
+    stringToBits(longToString(chaveDir));
   }
   // ======================================================================
 
@@ -400,8 +409,8 @@ unsigned long permutation(char *to_permute, const int pm[], int pmSize){
   // position specified by the given permutation matrix
   unsigned long res = 0;
   for(int i = 0; i < pmSize; i++){
-    // printf("O bit %02d da chave original (%d) vira o bit %02d da chave permutada\n", pm[i], bitAt(to_permute, 63 - (pm[i] - 1)), (pmSize - i));
-    res += (unsigned long) bitAt(to_permute, 63 - (pm[i] - 1)) << (pmSize - i - 1);
+    printf("O bit %02d da chave original (%d) vira o bit %02d da chave permutada\n", (pm[i] + (56 - pmSize)), bitAt(to_permute, 63 - (pm[i] + (56 - pmSize) - 1)), (pmSize - i));
+    res += (unsigned long) bitAt(to_permute, 63 - (pm[i] + (56 - pmSize) - 1)) << (pmSize - i - 1);
   }
 
   return res;
