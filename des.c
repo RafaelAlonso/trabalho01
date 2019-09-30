@@ -202,7 +202,7 @@ int main( int argc, char *argv[] ){
       // permutate the shifted key with permutation choice 2 (PC2) => 48-bit
       chaveManipulada = permutation(longToString(chaveManipulada), PC2, 48, 56);
 
-      printf("CHAVE DO ROUND %d\n", i+1);
+      printf("CHAVE DE ROUND %d\n", i+1);
       printf("%02lX\n\n", chaveManipulada);
 
     // ====================================================================
@@ -257,7 +257,7 @@ int main( int argc, char *argv[] ){
     // join them swaped
     entradaManipulada = (unsigned long) (entradaDir << 32) | entradaEsq;
 
-    printf("Swap (Hex): ");
+    printf("Swap: ");
     printf("%02lX\n\n", entradaManipulada);
 
     // pass it through with the final permutation (FP)
