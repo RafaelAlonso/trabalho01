@@ -1,3 +1,7 @@
+/*
+  Gustavo Eugênio de Souza Moraes - RA 620238
+  Rafael Pereira Alonso           - RA 620084
+*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -168,18 +172,18 @@ int main( int argc, char *argv[] ){
   strcpy(entrada, argv[1]);
   entrada[8] = '\0';
   printf("PLAIN TEXT\n");
-  printf("%02lX\n\n", stringToLong(entrada));
+  printf("%lX\n\n", stringToLong(entrada));
 
   // pass it through the initial permutation (IP)  => 64-bit
   entradaManipulada = initial_permutation(entrada);
   printf("IP\n");
-  printf("%02lX\n\n", entradaManipulada);
+  printf("%lX\n\n", entradaManipulada);
 
   // get the 64-bit key
   strcpy(chave, argv[2]);
   chave[8] = '\0';
   printf("CHAVE\n");
-  printf("%02lX\n\n", stringToLong(chave));
+  printf("%lX\n\n", stringToLong(chave));
 
   // pass it through the permutation choice 1 (PC1) => 56-bit
   chaveManipulada = permutation(chave, PC1, 56, 64);
@@ -203,7 +207,7 @@ int main( int argc, char *argv[] ){
       chaveManipulada = permutation(longToString(chaveManipulada), PC2, 48, 56);
 
       printf("CHAVE DE ROUND %d\n", i+1);
-      printf("%02lX\n\n", chaveManipulada);
+      printf("%lX\n\n", chaveManipulada);
 
     // ====================================================================
 
@@ -243,7 +247,7 @@ int main( int argc, char *argv[] ){
       entradaManipulada = (entradaManipulada << 32) | entradaDir;
 
       printf("ROUND %d\n", i+1);
-      printf("%02lX\n\n", entradaManipulada);
+      printf("%lX\n\n", entradaManipulada);
 
     // ====================================================================
   }
@@ -258,13 +262,13 @@ int main( int argc, char *argv[] ){
     entradaManipulada = (unsigned long) (entradaDir << 32) | entradaEsq;
 
     printf("Swap: ");
-    printf("%02lX\n\n", entradaManipulada);
+    printf("%lX\n\n", entradaManipulada);
 
     // pass it through with the final permutation (FP)
     entradaManipulada = final_permutation(longToString(entradaManipulada));
 
     printf("IP Inverso: ");
-    printf("%02lX\n\n", entradaManipulada);
+    printf("%lX\n\n", entradaManipulada);
 
     return 0;
 }
