@@ -299,11 +299,11 @@ int main( int argc, char *argv[] ){
       // ======================================
 
       // join the left and right sides swaped => 64-bit
-      entradaManipulada = (entradaDir << 32) | entradaEsq;
+      entradaManipulada = (entradaManipulada << 32) | entradaDir;
       // printf("Round %02d (64-bits):               ", i+1);
-      // stringToBits(longToString((entradaEsq << 32 | entradaDir)));
+      // stringToBits(longToString(entradaManipulada));
       printf("Round %02d (Hex):                   ", i+1);
-      printf("%02lX\n", (entradaEsq << 32 | entradaDir));
+      printf("%02lX\n", entradaManipulada);
       printf("\n");
 
     // ====================================================================
